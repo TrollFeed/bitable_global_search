@@ -80,12 +80,17 @@ npm run build    # outputs relative-path static assets to dist/
 npm run serve    # optional: serve dist/ locally on :6350 with CORS
 ```
 
-### Feishu Plugin Store Publishing Checklist
+### Publishing as a Top-Right Sidebar Extension
 
-1. Replace the placeholder IDs in [`app.json`](app.json) (`appId`) and [`block.json`](block.json) (`blockTypeID`, `url` using `https://`) with the credentials from your [Feishu Open Platform Console](https://open.feishu.cn/app).
-2. Run `npm run typecheck && npm test && npm run build` to verify zero TypeScript errors, passing unit/fuzz tests, and clean production bundles in `dist/`.
-3. Upload `dist/` via `@lark-opdev/cli` (`opdev upload`) or deploy `dist/` to an HTTPS static origin with CORS enabled (`Access-Control-Allow-Origin: *`). Production builds emit `./` relative chunk paths so CDN subpath hosting works out of the box.
-4. No external network requests or third-party analytics exist in the extension — all indexing, search, caching, and CSV/JSON/TSV export run 100% locally inside the user's browser sandbox.
+This extension uses `@lark-base-open/js-sdk` and runs inside Feishu Base's **Top-Right Extensions Panel (`Sidebar Extension`)** — not as an `open.feishu.cn` Record View (`app.json` / `block.json`), whose Block runtime uses a different host bridge.
+
+1. Run `npm run typecheck && npm test && npm run build` to verify zero TypeScript errors, passing tests, and clean relative-path static bundles in `dist/` (with `index.html` at `dist/index.html` and `"output": "dist"` in [`package.json`](package.json)).
+2. Commit and push `dist/` to your GitHub repository (public, or private with read access granted to `bitable-open@bytedance.com`).
+3. Open **Feishu Base Developer Center** (`https://<your-tenant>.feishu.cn/base/developer` or via your avatar menu in any Base → **Developer Center**):
+   - Click **New Product** → **Extension** → **Sidebar Extension**.
+   - Enter your GitHub repository URL and choose **Private** (auto-approved in ~30 minutes for personal use), **Current organization** (approved by your org's Base admin for company-wide availability in the Extensions panel), or **Public** (requires enterprise onboarding).
+4. **Alternative direct URL hosting**: Deploy `dist/` to any HTTPS static origin with CORS enabled (`Access-Control-Allow-Origin: *`), then in any Base click **Extensions → Customize → + New Extension** and enter the hosted HTTPS URL.
+5. No external network requests or third-party analytics exist in the extension — all indexing, search, caching, and CSV/JSON/TSV export run 100% locally inside the user's browser sandbox.
 
 ## Development
 

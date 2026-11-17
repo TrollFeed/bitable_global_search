@@ -1,4 +1,3 @@
-const fs = require('fs');
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
@@ -56,48 +55,6 @@ class HtaccessPlugin {
         },
         () => {
           compilation.emitAsset('.htaccess', new compiler.webpack.sources.RawSource(htaccessContent));
-        }
-      );
-    });
-  }
-}
-
-/**
- * Emits `project.config.json` and `index.json` into `dist/` from `app.json` +
- * `block.json`, matching `@lark-opdev/block-bitable-webpack-utils` so
- * `opdev upload ./dist` packages the Bitable Base extension cleanly.
- */
-class BitableBlockManifestPlugin {
-  apply(compiler) {
-    compiler.hooks.compilation.tap('BitableBlockManifestPlugin', (compilation) => {
-      compilation.hooks.processAssets.tap(
-        {
-          name: 'BitableBlockManifestPlugin',
-          stage: compiler.webpack.Compilation.PROCESS_ASSETS_STAGE_ADDITIONAL,
-        },
-        () => {
-          const appJsonPath = path.resolve(__dirname, 'app.json');
-          const blockJsonPath = path.resolve(__dirname, 'block.json');
-          if (!fs.existsSync(appJsonPath) || !fs.existsSync(blockJsonPath)) return;
-          const appJson = JSON.parse(fs.readFileSync(appJsonPath, 'utf-8'));
-          const blockJson = JSON.parse(fs.readFileSync(blockJsonPath, 'utf-8'));
-          const projectInfo = {
-            appid: appJson.appId,
-            projectname: blockJson.projectName || 'Global Search',
-            blocks: ['index'],
-          };
-          const blockInfo = {
-            blockTypeID: blockJson.blockTypeID,
-            blockRenderType: 'offlineWeb',
-          };
-          compilation.emitAsset(
-            'project.config.json',
-            new compiler.webpack.sources.RawSource(JSON.stringify(projectInfo))
-          );
-          compilation.emitAsset(
-            'index.json',
-            new compiler.webpack.sources.RawSource(JSON.stringify(blockInfo))
-          );
         }
       );
     });
@@ -175,7 +132,6 @@ module.exports = (_env, argv = {}) => ({
       inject: 'body',
     }),
     new HtaccessPlugin(),
-    ...(argv.mode === 'production' ? [new BitableBlockManifestPlugin()] : []),
   ],
   devServer: {
     port: 6350,

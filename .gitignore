@@ -1,8 +1,9 @@
 # Dependencies
 node_modules/
 
-# Build output
-dist/
+# Build output: committed intentionally so Feishu Base Developer Center
+# (`"output": "dist"` in package.json) can statically deploy Sidebar Extensions.
+# dist/
 
 # Test / coverage artifacts
 coverage/
